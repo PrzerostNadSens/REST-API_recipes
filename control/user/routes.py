@@ -15,12 +15,20 @@ api = Blueprint(MOD_NAME, __name__)
 
 
 @api.route('/', methods=['GET'])
+@jwt_required()
 def get_us():
     try:
+        user_id = get_jwt_identity()
+        user_profile = User.objects.get(id=user_id)
+        if user_profile.administrator == True:
+            user_profile = User.objects()
+        else:
+            user_profile = ""
+
         def user():
             yield '{"TIME":' + str(time()) + ',"User":['
             dot = False
-            for item in User.objects():
+            for item in user_profile:
                 if dot:
                     yield ','
                 yield item.to_json()
@@ -67,8 +75,11 @@ def add_user():
 
 
 @api.route('/<id>', methods=['PUT'])
+@jwt_required()
 def update_user(id):
     try:
+        user_id = get_jwt_identity()
+        user = User.objects.get(id=user_id)
         body1 = request.get_json()
         User.objects.get(id=id).update(**body1)
         return {'id': str(id)}, 200
@@ -88,9 +99,12 @@ def update_user(id):
 
 
 @api.route('/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(id):
     try:
-        user = User.objects.get(id=id).delete()
+        user_id = get_jwt_identity()
+        user = User.objects.get(id=user_id)
+        user.delete()
         return '', 200
     except DoesNotExist:
         return jsonify(DeletingError()), 403
@@ -132,14 +146,27 @@ użytkownik 1
     "password": "trudne_haslo.123"
 }
 
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNTE0NiwianRpIjoiNTlmNzQzN2MtMjI2ZS00ZGZjLWFiZjYtMzI5ZDY0MDcyYzc4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhNzdkMjMzNWI5MWI5NDNhYmU2NSIsIm5iZiI6MTYyMzQzNTE0NiwiZXhwIjoxNjI0MDM5OTQ2fQ.8plXwa9S-KdJSETekDksadeIZoFoSQR-HgRsBn_cN1c
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzOTE5MCwianRpIjoiMDlhMjE1YjItOTEyNy00ODhkLWE5MGMtNjIzNTgwYmU0MmYzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNiNmZmNDI3MjZlMGQ4YzE4NmM2ZSIsIm5iZiI6MTYyMzQzOTE5MCwiZXhwIjoxNjI0MDQzOTkwfQ.icSf6jy_D-dYYMIGOEa7tRR4hnK1n6eW033o_hZqsXI
 
 użytkownik 2
 {
-    "mail": "przyklaowy@test.com",
+    "mail": "przykladowy2@tes2t.com",
+    "password": "trudne_haslo.1232"
+}
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNjQ0MiwianRpIjoiZGFlYzc1OTUtNmZiNC00MDFhLTlkYTUtNGE3MjQ5ZjIwN2NhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhYzdkNzVjY2IwN2M4OGQwNDc1NSIsIm5iZiI6MTYyMzQzNjQ0MiwiZXhwIjoxNjI0MDQxMjQyfQ.-V6al_N-pG2reWMXTgOzIvvOfMZO5vUYVzV7formtdc
+'''
+'''
+admin
+
+{
+    "mail": "przykladoAwy@test.com",
     "password": "trudne_haslo.123"
 }
 
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzMTc1NywianRpIjoiZTkyYWIzYTYtMTY5Ny00MWU3LWFhOWItYzc1YzEwMmQ3NjEwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzM5YTIzOWE2NTVmZjdiNmVmMDUyNiIsIm5iZiI6MTYyMzQzMTc1NywiZXhwIjoxNjI0MDM2NTU3fQ.M5DICHRPm9Rr8VD_ZsvSKh8ibYd0Onv8NrNf-Sua-Y0
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNzIyNiwianRpIjoiNThiNzg0N2EtNDg1MC00OTlmLTkwMDQtZjZlMmE4NmE5NWQxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhZjk5ZDYwNjc3MDA3M2FjOGI4ZCIsIm5iZiI6MTYyMzQzNzIyNiwiZXhwIjoxNjI0MDQyMDI2fQ.-MotC99KoT7tTzcmCRHQGPdVvUth4q7FECDZZQu1s2w
+
+
+
 
 '''

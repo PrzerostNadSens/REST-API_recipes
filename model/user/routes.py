@@ -15,6 +15,7 @@ class User(me.Document):
     phone = me.StringField(unique=True, min_length=9)
     password = me.StringField(required=True, min_length=8)
     birthday = me.DateTimeField()
+    administrator = me.BooleanField()
     recipes = me.ListField(me.ReferenceField('Recipe', reverse_delete_rule=me.PULL))
     meta = {'collection': 'User'}
 
@@ -34,7 +35,8 @@ class User(me.Document):
             "phone": self.phone,
             "password": self.password,
             "birthday": self.birthday,
-            "recipes": str(self.pk)
+            "administrator": self.administrator,
+            "recipes": str(self.recipes)
         })
 
 
