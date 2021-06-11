@@ -17,17 +17,31 @@ api = Blueprint(MOD_NAME, __name__)
 
 
 @api.route('/', methods=['GET'])
+@jwt_required()
 def recipe():
     query = {}
     t = {}
     try:
-        if 'name' in request.args:
-            query['name'] = request.args['name']
-        if 'lastUpdate' in request.args:
-            t['lastUpdate'] = datetime.fromtimestamp(float(request.args['lastUpdate']))
-            rec = Recipe.objects.filter((Q(lastUpdate__gte=t['lastUpdate'])), **query)
+
+        user_id = get_jwt_identity()
+        user_profile = User.objects.get(id=user_id)
+        if user_profile.administrator == True:
+            if 'name' in request.args:
+                query['name'] = request.args['name']
+            if 'lastUpdate' in request.args:
+                t['lastUpdate'] = datetime.fromtimestamp(float(request.args['lastUpdate']))
+                rec = Recipe.objects.filter((Q(lastUpdate__gte=t['lastUpdate'])), **query)
+            else:
+                rec = Recipe.objects(**query)
         else:
-            rec = Recipe.objects(**query)
+            if 'name' in request.args:
+                query['name'] = request.args['name']
+            if 'lastUpdate' in request.args:
+                t['lastUpdate'] = datetime.fromtimestamp(float(request.args['lastUpdate']))
+                rec = Recipe.objects.filter((Q(lastUpdate__gte=t['lastUpdate'])), **query, added_by=user_profile)
+            else:
+                rec = Recipe.objects(**query, added_by=user_profile)
+
         def recipe():
             yield '{"TIME":' + str(time()) + ',"Recipes":['
             dot = False
@@ -109,8 +123,8 @@ def delete_recipe(id):
 @jwt_required()
 def get_gas_id(id):
     try:
-        #user_id = get_jwt_identity()
-        recipe = Recipe.objects.get(id=id)#, added_by=user_id)
+        user_id = get_jwt_identity()
+        recipe = Recipe.objects.get(id=id, added_by=user_id)
 
         def re():
             yield '{"TIME":' + str(time()) + ',"Recipe":['

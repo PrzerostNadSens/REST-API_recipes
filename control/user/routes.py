@@ -150,11 +150,12 @@ eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzOTE5MCw
 
 użytkownik 2
 {
-    "mail": "przykladowy2@tes2t.com",
-    "password": "trudne_haslo.1232"
+    "mail": "przyklad2owy@test.com",
+    "password": "trudne_haslo.123"
 }
 
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNjQ0MiwianRpIjoiZGFlYzc1OTUtNmZiNC00MDFhLTlkYTUtNGE3MjQ5ZjIwN2NhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhYzdkNzVjY2IwN2M4OGQwNDc1NSIsIm5iZiI6MTYyMzQzNjQ0MiwiZXhwIjoxNjI0MDQxMjQyfQ.-V6al_N-pG2reWMXTgOzIvvOfMZO5vUYVzV7formtdc
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQ0MjU0NSwianRpIjoiZDhkNzJmZTUtNWQxYi00NGE3LTk1MmYtNzExNzg5MzQ0ZGY5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNjNDViZjM4NmI3OGE3MDc5NTMzOSIsIm5iZiI6MTYyMzQ0MjU0NSwiZXhwIjoxNjI0MDQ3MzQ1fQ.nlcDIa2gXzeKu8POH-GR8QxWONiHw1Tcrpau147Ek6Y
+
 '''
 '''
 admin
