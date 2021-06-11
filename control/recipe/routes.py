@@ -6,11 +6,12 @@ from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, 
 from errors import SchemaValidationError, AlreadyExistsError, InternalServerError, UpdatingError, DeletingError, \
     NotExistsError, FieldError
 from model.recipe import Recipe
+from model.user import User
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 MOD_NAME = "Recipe"
 IGNORED = False
 api = Blueprint(MOD_NAME, __name__)
-
 
 
 @api.route('/', methods=['GET'])
@@ -21,6 +22,7 @@ def recipe():
         if 'name' in request.args:
             query['name'] = request.args['name']
         rec = Recipe.objects(**query)
+
         def recipe():
             yield '{"TIME":' + str(time()) + ',"Recipes":['
             dot = False
@@ -37,11 +39,18 @@ def recipe():
     except Exception as e:
         return jsonify(InternalServerError()), 404
 
+
 @api.route('/', methods=['POST'])
+@jwt_required()
 def add_recipe():
     try:
+        user_id = get_jwt_identity()
         body = request.get_json()
-        recipe = Recipe(**body).save()
+        user = User.objects.get(id=user_id)
+        recipe = Recipe(**body, added_by=user)
+        recipe.save()
+        user.update(push__recipes=recipe)
+        user.save()
         id = recipe.id
         return {'id': str(id)}, 200
     except FieldDoesNotExist:
@@ -51,15 +60,15 @@ def add_recipe():
     except NotUniqueError:
         return jsonify(AlreadyExistsError("Przepis")), 400
     except Exception as e:
-        if e.code:
-            return jsonify(e.description), 400
-        else:
-            return jsonify(InternalServerError()), 404
+        return jsonify(InternalServerError()), 404
 
 
 @api.route('/<id>', methods=['PUT'])
+@jwt_required()
 def update_recipe(id):
     try:
+        user_id = get_jwt_identity()
+        recipe = Recipe.objects.get(id=id, added_by=user_id)
         body3 = request.get_json()
         Recipe.objects.get(id=id).update(**body3)
         Recipe.objects.get(id=id).update_date()
@@ -78,9 +87,12 @@ def update_recipe(id):
 
 
 @api.route('/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_recipe(id):
     try:
-        Recipe.objects.get(id=id).delete()
+        user_id = get_jwt_identity()
+        recipe = Recipe.objects.get(id=id, added_by=user_id)
+        recipe.delete()
         return '', 200
     except DoesNotExist:
         return jsonify(DeletingError()), 403
@@ -89,15 +101,17 @@ def delete_recipe(id):
 
 
 @api.route('/<id>', methods=['GET'])
+@jwt_required()
 def get_gas_id(id):
     try:
-        recipe = Recipe.objects.get(id=id)
+        user_id = get_jwt_identity()
+        recipe = Recipe.objects.get(id=id, added_by=user_id)
 
-        def recipe():
+        def re():
             yield '{"TIME":' + str(time()) + ',"Recipe":['
             yield recipe.to_json() + ']}'
 
-        return Response(recipe(), mimetype="application/json", status=200)
+        return Response(re(), mimetype="application/json", status=200)
     except DoesNotExist:
         return jsonify(NotExistsError("Przepis")), 400
     except Exception:
@@ -109,7 +123,6 @@ def get_gas_id(id):
     "name": "tort",
     "type": "ciasto",
     "photo": "",
-    "recipe": "miejsce na przepis",
-    "userId": "60c35584c44310836596e757"
+    "recipe": "miejsce na przepis"
   }
 '''
