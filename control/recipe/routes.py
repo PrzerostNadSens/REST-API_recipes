@@ -1,10 +1,8 @@
 from datetime import datetime
 from time import time
-
 from flask import Blueprint, request, Response, jsonify
 from mongoengine import Q
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
-
 from errors import SchemaValidationError, AlreadyExistsError, InternalServerError, UpdatingError, DeletingError, \
     NotExistsError, FieldError
 from model.recipe import Recipe
@@ -135,13 +133,3 @@ def get_gas_id(id):
         return jsonify(NotExistsError("Przepis")), 400
     except Exception:
         return jsonify(InternalServerError()), 404
-
-
-'''
-  {
-    "name": "tort",
-    "type": "ciasto",
-    "photo": "",
-    "recipe": "miejsce na przepis"
-  }
-'''

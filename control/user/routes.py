@@ -1,10 +1,8 @@
 from flask import Blueprint, request, Response, jsonify
-
 from model.user.routes import User
 from time import time
 import datetime
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 from errors import SchemaValidationError, AlreadyExistsError, InternalServerError, UpdatingError, DeletingError, \
     NotExistsError, FieldError, UnauthorizedError
@@ -12,7 +10,6 @@ from errors import SchemaValidationError, AlreadyExistsError, InternalServerErro
 MOD_NAME = "User"
 IGNORED = False
 api = Blueprint(MOD_NAME, __name__)
-
 
 @api.route('/', methods=['GET'])
 @jwt_required()
@@ -34,7 +31,6 @@ def get_us():
                 yield item.to_json()
                 dot = True
             yield ']}'
-
         return Response(user(), mimetype="application/json", status=200)
     except DoesNotExist:
         return jsonify(NotExistsError("Użytkownik")), 400
@@ -49,7 +45,6 @@ def log_user():
     authorized = user.check_password(body.get('password'))
     if not authorized:
         return UnauthorizedError()
-
     expires = datetime.timedelta(days=7)
     access_token = create_access_token(identity=str(user.id), expires_delta=expires)
     return {'token': access_token}, 200
@@ -118,56 +113,11 @@ def get_user():
     try:
         user_id = get_jwt_identity()
         user_profile = User.objects.get(id=user_id).to_json()
-
         def user():
             yield '{"TIME":' + str(time()) + ',"User":['
             yield user_profile + ']}'
-
         return Response(user(), mimetype="application/json", status=200)
     except DoesNotExist:
         return jsonify(NotExistsError("Użytkownik")), 400
     except Exception:
         return jsonify(InternalServerError()), 404
-
-
-'''  
-{
-    "first_name": "test_1",
-    "subname": "tak",
-    "mail": "przykladowy@test.com",
-    "login": "test_test",
-    "phone": "123123123",
-    "password": "trudne_haslo.123"
-}
-użytkownik 1
-
-{
-    "mail": "przykladowy@test.com",
-    "password": "trudne_haslo.123"
-}
-
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzOTE5MCwianRpIjoiMDlhMjE1YjItOTEyNy00ODhkLWE5MGMtNjIzNTgwYmU0MmYzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNiNmZmNDI3MjZlMGQ4YzE4NmM2ZSIsIm5iZiI6MTYyMzQzOTE5MCwiZXhwIjoxNjI0MDQzOTkwfQ.icSf6jy_D-dYYMIGOEa7tRR4hnK1n6eW033o_hZqsXI
-
-użytkownik 2
-{
-    "mail": "przyklad2owy@test.com",
-    "password": "trudne_haslo.123"
-}
-
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQ0MjU0NSwianRpIjoiZDhkNzJmZTUtNWQxYi00NGE3LTk1MmYtNzExNzg5MzQ0ZGY5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNjNDViZjM4NmI3OGE3MDc5NTMzOSIsIm5iZiI6MTYyMzQ0MjU0NSwiZXhwIjoxNjI0MDQ3MzQ1fQ.nlcDIa2gXzeKu8POH-GR8QxWONiHw1Tcrpau147Ek6Y
-
-'''
-'''
-admin
-
-{
-    "mail": "przykladoAwy@test.com",
-    "password": "trudne_haslo.123"
-}
-
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNzIyNiwianRpIjoiNThiNzg0N2EtNDg1MC00OTlmLTkwMDQtZjZlMmE4NmE5NWQxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhZjk5ZDYwNjc3MDA3M2FjOGI4ZCIsIm5iZiI6MTYyMzQzNzIyNiwiZXhwIjoxNjI0MDQyMDI2fQ.-MotC99KoT7tTzcmCRHQGPdVvUth4q7FECDZZQu1s2w
-
-
-
-
-'''

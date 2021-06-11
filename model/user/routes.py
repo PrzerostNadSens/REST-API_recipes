@@ -6,7 +6,6 @@ from model.recipe import Recipe
 
 MOD_NAME = "User_"
 
-
 class User(me.Document):
     first_name = me.StringField(required=True)
     subname = me.StringField(required=True)

@@ -1,11 +1,10 @@
 import importlib
 import os
 import secrets
-import sys
 from pathlib import Path
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-from flask import Flask, jsonify
+from flask import Flask
 from flask_mongoengine import MongoEngine
 
 from errors import page_not_found
