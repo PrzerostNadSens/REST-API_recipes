@@ -118,7 +118,7 @@ def get_user():
 
 '''  
 {
-    "name": "test_1",
+    "first_name": "test_1",
     "subname": "tak",
     "mail": "przykladowy@test.com",
     "login": "test_test",
@@ -131,6 +131,8 @@ użytkownik 1
     "mail": "przykladowy@test.com",
     "password": "trudne_haslo.123"
 }
+
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyMzQzNTE0NiwianRpIjoiNTlmNzQzN2MtMjI2ZS00ZGZjLWFiZjYtMzI5ZDY0MDcyYzc4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYwYzNhNzdkMjMzNWI5MWI5NDNhYmU2NSIsIm5iZiI6MTYyMzQzNTE0NiwiZXhwIjoxNjI0MDM5OTQ2fQ.8plXwa9S-KdJSETekDksadeIZoFoSQR-HgRsBn_cN1c
 
 użytkownik 2
 {

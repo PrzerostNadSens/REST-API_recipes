@@ -1,6 +1,8 @@
+from datetime import datetime
 from time import time
 
 from flask import Blueprint, request, Response, jsonify
+from mongoengine import Q
 from mongoengine.errors import FieldDoesNotExist, NotUniqueError, DoesNotExist, ValidationError, InvalidQueryError
 
 from errors import SchemaValidationError, AlreadyExistsError, InternalServerError, UpdatingError, DeletingError, \
@@ -17,12 +19,15 @@ api = Blueprint(MOD_NAME, __name__)
 @api.route('/', methods=['GET'])
 def recipe():
     query = {}
-
+    t = {}
     try:
         if 'name' in request.args:
             query['name'] = request.args['name']
-        rec = Recipe.objects(**query)
-
+        if 'lastUpdate' in request.args:
+            t['lastUpdate'] = datetime.fromtimestamp(float(request.args['lastUpdate']))
+            rec = Recipe.objects.filter((Q(lastUpdate__gte=t['lastUpdate'])), **query)
+        else:
+            rec = Recipe.objects(**query)
         def recipe():
             yield '{"TIME":' + str(time()) + ',"Recipes":['
             dot = False
@@ -104,8 +109,8 @@ def delete_recipe(id):
 @jwt_required()
 def get_gas_id(id):
     try:
-        user_id = get_jwt_identity()
-        recipe = Recipe.objects.get(id=id, added_by=user_id)
+        #user_id = get_jwt_identity()
+        recipe = Recipe.objects.get(id=id)#, added_by=user_id)
 
         def re():
             yield '{"TIME":' + str(time()) + ',"Recipe":['

@@ -27,5 +27,5 @@ class Recipe(me.Document):
             "photo": self.photo,
             "recipe": self.recipe,
             "lastUpdate": self.lastUpdate.timestamp(),
-            "added_by": self.added_by
+            "added_by": str(self.pk)
         })
